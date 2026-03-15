@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState } from "react";
 import axios from "axios"; 
+import { useEffect } from "react";
 import "./Text_summary.css"; 
 
 function Text_summary(){
@@ -19,6 +21,13 @@ function Text_summary(){
 
     //Apyhub API
     const api_url = "https://api.apyhub.com/ai/summarize-text";
+
+    useEffect(()=>{
+        const saved_limit = localStorage.getItem("summarylimit");
+        if(saved_limit){
+            setlimit(Number(saved_limit));
+        }
+    },[])
 
     async function fetchSummary(e){
         e.preventDefault();
@@ -47,12 +56,17 @@ function Text_summary(){
             );
             const result = response.data.data.summary;
             setsummary(result);
-            setlimit(limit_count+1);
+            setlimit(limit+1);
+            const newlimit =  limit+1;
+            setlimit(newlimit);
+            localStorage.setItem("summarylimit",newlimit);
             console.log("Summary generated successfully");
             console.log("Limit : ",limit);
         }catch(err){
             console.log("Error : " , err);
             seterror("Failed to generate summary");
+            setsummary(null);
+            settext("");
         }
     }
 
@@ -77,7 +91,7 @@ function Text_summary(){
                             settext(e.target.value);
                             seterror("");
                         }}></textarea>
-                        <p className="limit">{limit}/{limit_count}</p>
+                        <p className="limit">Limit : {limit}/{limit_count}</p>
                         <button type="submit">GENERATE SUMMARY</button>
                     </form>
                 </div>
