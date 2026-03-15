@@ -102,6 +102,7 @@ function Text_summary(){
                         <p className="summ">{summary}</p>
                     </div>
                 )}
+
             </div>
         </>
     )
